@@ -60,5 +60,41 @@ namespace EdlinSoftware.Combinatorics
                 yield return number.Select(d => sequence[(int)d]).ToArray();
             }
         }
+
+        public static IEnumerable<IEnumerable<T>> GenerateSortedDifferentSequencesOfLength<T>(this IReadOnlyList<T> sequence,
+            uint length)
+        {
+            if ((sequence?.Count ?? 0) == 0)
+                throw new ArgumentException("Sequence should not be null or empty.", nameof(sequence));
+
+            return GenerateSortedDifferentSequencesOfLengthInternal(sequence, length);
+        }
+
+        private static IEnumerable<IEnumerable<T>> GenerateSortedDifferentSequencesOfLengthInternal<T>(
+            IReadOnlyList<T> sequence,
+            uint length)
+        {
+            if (length == 0)
+            {
+                yield return new T[0];
+                yield break;
+            }
+
+            foreach (var number in new NaryNumbersGenerator((uint)sequence.Count, length).GetAllNumbers().Where(IsSorted))
+            {
+                yield return number.Select(d => sequence[(int)d]).ToArray();
+            }
+        }
+
+        private static bool IsSorted(uint[] number)
+        {
+            for(var index = 0; index < number.Length - 1; index++)
+            {
+                if (number[index] > number[index + 1])
+                    return false;
+            }
+
+            return true;
+        }
     }
 }
