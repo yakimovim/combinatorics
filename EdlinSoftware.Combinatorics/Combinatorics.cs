@@ -96,5 +96,65 @@ namespace EdlinSoftware.Combinatorics
 
             return true;
         }
+
+        public static IEnumerable<IEnumerable<T>> GenerateAllPermutationsOfLength<T>(this IReadOnlyList<T> sequence,
+            uint length)
+        {
+            if ((sequence?.Count ?? 0) == 0)
+                throw new ArgumentException("Sequence should not be null or empty.", nameof(sequence));
+            if(length > sequence?.Count)
+                throw new ArgumentOutOfRangeException(nameof(length), "Length of permutations can't be greater than length of sequence");
+
+            return GenerateAllPermutationsOfLengthInternal(sequence, length);
+        }
+
+        private static IEnumerable<ISet<T>> GenerateAllPermutationsOfLengthInternal<T>(IReadOnlyList<T> sequence, uint length)
+        {
+            if (length == 0)
+            {
+                yield return new HashSet<T>();
+                yield break;
+            }
+
+            foreach (var smallerSequence in GenerateAllPermutationsOfLengthInternal(sequence, length - 1))
+            {
+                foreach (var item in sequence.Where(i => !smallerSequence.Contains(i)))
+                {
+                    yield return new HashSet<T>(smallerSequence) { item };
+                }
+            }
+        }
+
+        public static IEnumerable<IEnumerable<T>> GenerateAllPermutationsOfLengthStackSafe<T>(this IReadOnlyList<T> sequence,
+            uint length)
+        {
+            if ((sequence?.Count ?? 0) == 0)
+                throw new ArgumentException("Sequence should not be null or empty.", nameof(sequence));
+            if (length > sequence?.Count)
+                throw new ArgumentOutOfRangeException(nameof(length), "Length of permutations can't be greater than length of sequence");
+
+            return GenerateAllPermutationsOfLengthInternalStackSafe(sequence, length);
+        }
+
+        private static IEnumerable<IEnumerable<T>> GenerateAllPermutationsOfLengthInternalStackSafe<T>(IReadOnlyList<T> sequence, uint length)
+        {
+            if (length == 0)
+            {
+                yield return new HashSet<T>();
+                yield break;
+            }
+
+            foreach (var number in new NaryNumbersGenerator((uint)sequence.Count, length)
+                .GetAllNumbers()
+                .Where(AllDigitsAreDistinct))
+            {
+                yield return number.Select(d => sequence[(int)d]).ToArray();
+            }
+        }
+
+        private static bool AllDigitsAreDistinct(uint[] number)
+        {
+            return new HashSet<uint>(number).Count == number.Length;
+        }
     }
 }
