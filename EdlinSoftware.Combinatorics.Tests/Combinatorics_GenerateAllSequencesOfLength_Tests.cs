@@ -86,10 +86,7 @@ namespace EdlinSoftware.Combinatorics.Tests
         {
             get
             {
-                foreach (var generator in GetGenerators())
-                {
-                    yield return new object[] { generator };
-                }
+                return GetGenerators().Select(generator => new object[] { generator });
             }
         }
     }

@@ -61,16 +61,16 @@ namespace EdlinSoftware.Combinatorics
             }
         }
 
-        public static IEnumerable<IEnumerable<T>> GenerateSortedDifferentSequencesOfLength<T>(this IReadOnlyList<T> sequence,
+        public static IEnumerable<IEnumerable<T>> GenerateOrderedDifferentSequencesOfLength<T>(this IReadOnlyList<T> sequence,
             uint length)
         {
             if ((sequence?.Count ?? 0) == 0)
                 throw new ArgumentException("Sequence should not be null or empty.", nameof(sequence));
 
-            return GenerateSortedDifferentSequencesOfLengthInternal(sequence, length);
+            return GenerateOrderedDifferentSequencesOfLengthInternal(sequence, length);
         }
 
-        private static IEnumerable<IEnumerable<T>> GenerateSortedDifferentSequencesOfLengthInternal<T>(
+        private static IEnumerable<IEnumerable<T>> GenerateOrderedDifferentSequencesOfLengthInternal<T>(
             IReadOnlyList<T> sequence,
             uint length)
         {

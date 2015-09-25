@@ -5,11 +5,11 @@ using Xunit;
 
 namespace EdlinSoftware.Combinatorics.Tests
 {
-    public class Combinatorics_GenerateSortedDifferentSequencesOfLength_Tests
+    public class Combinatorics_GenerateOrderedDifferentSequencesOfLength_Tests
     {
         [Theory]
         [MemberData("NoSequences")]
-        public void GenerateAllSequencesOfLength_ShouldThrowException_IfSequenceIsNullOrEmpty(
+        public void GenerateOrderedDifferentSequencesOfLength_ShouldThrowException_IfSequenceIsNullOrEmpty(
             IReadOnlyList<int> sequence,
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
@@ -18,7 +18,7 @@ namespace EdlinSoftware.Combinatorics.Tests
 
         [Theory]
         [MemberData("Generators")]
-        public void GenerateAllSequencesOfLength_ShouldReturnOneEmptyEnumeration_IfLengthIsZero(
+        public void GenerateOrderedDifferentSequencesOfLength_ShouldReturnOneEmptyEnumeration_IfLengthIsZero(
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
             Assert.Equal(new[] { new int[0] }, generator(new[] { 1 }, 0));
@@ -26,7 +26,7 @@ namespace EdlinSoftware.Combinatorics.Tests
 
         [Theory]
         [MemberData("Generators")]
-        public void GenerateAllSequencesOfLength_ShouldReturnEnumerationOfSingleElements_IfLengthIsOne(
+        public void GenerateOrderedDifferentSequencesOfLength_ShouldReturnEnumerationOfSingleElements_IfLengthIsOne(
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
             var sequences = generator(Enumerable.Range(1, 5).ToArray(), 1);
@@ -44,7 +44,7 @@ namespace EdlinSoftware.Combinatorics.Tests
 
         [Theory]
         [MemberData("Generators")]
-        public void GenerateAllSequencesOfLength_IfLengthIsTwo(
+        public void GenerateOrderedDifferentSequencesOfLength_IfLengthIsTwo(
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
             var sequences = generator(Enumerable.Range(1, 2).ToArray(), 2);
@@ -60,7 +60,7 @@ namespace EdlinSoftware.Combinatorics.Tests
 
         [Theory]
         [MemberData("Generators")]
-        public void GenerateAllSequencesOfLength_IfLengthIsThree(
+        public void GenerateOrderedDifferentSequencesOfLength_IfLengthIsThree(
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
             var sequences = generator(Enumerable.Range(1, 2).ToArray(), 3);
@@ -70,7 +70,7 @@ namespace EdlinSoftware.Combinatorics.Tests
                 { 1, 1, 1 },
                 { 1, 1, 2 },
                 { 1, 2, 2 },
-                { 2, 2, 2 },
+                { 2, 2, 2 }
             };
             ver.Verify(sequences);
         }
@@ -78,7 +78,7 @@ namespace EdlinSoftware.Combinatorics.Tests
         private static IEnumerable<Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>>> GetGenerators()
         {
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator =
-                (sequence, length) => sequence.GenerateSortedDifferentSequencesOfLength(length);
+                (sequence, length) => sequence.GenerateOrderedDifferentSequencesOfLength(length);
 
             yield return generator;
         }
@@ -99,10 +99,7 @@ namespace EdlinSoftware.Combinatorics.Tests
         {
             get
             {
-                foreach (var generator in GetGenerators())
-                {
-                    yield return new object[] { generator };
-                }
+                return GetGenerators().Select(generator => new object[] { generator });
             }
         }
     }
