@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Combinatorics_GenerateAllPermutationsOfLength_Tests.cs" />
     <Compile Include="Combinatorics_GenerateAllSequencesOfLength_Tests.cs" />
+    <Compile Include="Combinatorics_GenerateOrderedDifferentPermutationsOfLength_Tests.cs" />
     <Compile Include="Combinatorics_GenerateOrderedDifferentSequencesOfLength_Tests.cs" />
     <Compile Include="NaryNumbersGeneratorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

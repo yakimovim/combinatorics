@@ -156,5 +156,33 @@ namespace EdlinSoftware.Combinatorics
         {
             return new HashSet<uint>(number).Count == number.Length;
         }
+
+        public static IEnumerable<IEnumerable<T>> GenerateOrderedDifferentPermutationsOfLength<T>(this IReadOnlyList<T> sequence,
+            uint length)
+        {
+            if ((sequence?.Count ?? 0) == 0)
+                throw new ArgumentException("Sequence should not be null or empty.", nameof(sequence));
+            if (length > sequence?.Count)
+                throw new ArgumentOutOfRangeException(nameof(length), "Length of permutations can't be greater than length of sequence");
+
+            return GenerateOrderedDifferentPermutationsOfLengthInternal(sequence, length);
+        }
+
+        private static IEnumerable<IEnumerable<T>> GenerateOrderedDifferentPermutationsOfLengthInternal<T>(IReadOnlyList<T> sequence, uint length)
+        {
+            if (length == 0)
+            {
+                yield return new HashSet<T>();
+                yield break;
+            }
+
+            foreach (var number in new NaryNumbersGenerator((uint)sequence.Count, length)
+                .GetAllNumbers()
+                .Where(AllDigitsAreDistinct)
+                .Where(IsSorted))
+            {
+                yield return number.Select(d => sequence[(int)d]).ToArray();
+            }
+        }
     }
 }
