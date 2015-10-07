@@ -56,10 +56,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Combinatorics_GenerateAllPermutationsOfLength_Tests.cs" />
-    <Compile Include="Combinatorics_GenerateAllSequencesOfLength_Tests.cs" />
-    <Compile Include="Combinatorics_GenerateOrderedDifferentPermutationsOfLength_Tests.cs" />
-    <Compile Include="Combinatorics_GenerateOrderedDifferentSequencesOfLength_Tests.cs" />
+    <Compile Include="Combinatorics_GetOrderedSamplesWithoutReplacement_Tests.cs" />
+    <Compile Include="Combinatorics_GetOrderedSamplesWithReplacement_Tests.cs" />
+    <Compile Include="Combinatorics_GetUnorderedSamplesWithoutReplacement_Tests.cs" />
+    <Compile Include="Combinatorics_GetUnorderedSamplesWithReplacement_Tests.cs" />
     <Compile Include="NaryNumbersGeneratorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SequencesVerifier.cs" />

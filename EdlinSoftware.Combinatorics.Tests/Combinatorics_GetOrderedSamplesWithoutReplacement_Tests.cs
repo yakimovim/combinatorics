@@ -5,11 +5,11 @@ using Xunit;
 
 namespace EdlinSoftware.Combinatorics.Tests
 {
-    public class Combinatorics_GenerateAllPermutationsOfLength_Tests
+    public class Combinatorics_GetOrderedSamplesWithoutReplacement_Tests
     {
         [Theory]
         [MemberData("NoSequences")]
-        public void GenerateAllPermutationsOfLength_ShouldThrowException_IfSequenceIsNullOrEmpty(
+        public void GetOrderedSamplesWithoutReplacement_ShouldThrowException_IfSequenceIsNullOrEmpty(
             IReadOnlyList<int> sequence,
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
@@ -18,15 +18,15 @@ namespace EdlinSoftware.Combinatorics.Tests
 
         [Theory]
         [MemberData("Generators")]
-        public void GenerateAllPermutationsOfLength_ShouldThrowException_IfLenghtIsGreaterThanSequence(
+        public void GetOrderedSamplesWithoutReplacement_ShouldThrowException_IfLenghtIsGreaterThanSequence(
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
-            Assert.Throws<ArgumentOutOfRangeException>("length", () => generator(new [] { 1, 2 }, 3));
+            Assert.Throws<ArgumentOutOfRangeException>("sampleLength", () => generator(new [] { 1, 2 }, 3));
         }
 
         [Theory]
         [MemberData("Generators")]
-        public void GenerateAllPermutationsOfLength_IfLenghtIsZero(
+        public void GetOrderedSamplesWithoutReplacement_IfLenghtIsZero(
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
             var ver = new SequencesVerifier<int>
@@ -41,7 +41,7 @@ namespace EdlinSoftware.Combinatorics.Tests
 
         [Theory]
         [MemberData("Generators")]
-        public void GenerateAllPermutationsOfLength_IfLenghtIsOne(
+        public void GetOrderedSamplesWithoutReplacement_IfLenghtIsOne(
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
             var ver = new SequencesVerifier<int>
@@ -57,7 +57,7 @@ namespace EdlinSoftware.Combinatorics.Tests
 
         [Theory]
         [MemberData("Generators")]
-        public void GenerateAllPermutationsOfLength_IfLenghtIsTwo(
+        public void GetOrderedSamplesWithoutReplacement_IfLenghtIsTwo(
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
             var ver = new SequencesVerifier<int>
@@ -74,9 +74,9 @@ namespace EdlinSoftware.Combinatorics.Tests
         private static IEnumerable<Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>>> GetGenerators()
         {
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator =
-                (sequence, length) => sequence.GenerateAllPermutationsOfLength(length);
+                (sequence, length) => sequence.GetOrderedSamplesWithoutReplacement(length);
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> safeGenerator =
-                (sequence, length) => sequence.GenerateAllPermutationsOfLengthStackSafe(length);
+                (sequence, length) => sequence.GetOrderedSamplesWithoutReplacementStackSafe(length);
 
             yield return generator;
             yield return safeGenerator;

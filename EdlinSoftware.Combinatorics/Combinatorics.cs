@@ -6,35 +6,68 @@ namespace EdlinSoftware.Combinatorics
 {
     public static class Combinatorics
     {
-        public static IEnumerable<IEnumerable<T>> GenerateAllSequencesOfLength<T>(this IReadOnlyList<T> sequence,
-            uint length)
+        /// <summary>
+        /// Returns all possible samples of length <paramref name="sampleLength"/> from <paramref name="sequence"/> with replacement.
+        /// Order of items is important. It means that result can contain samples with the same items but in different order.
+        /// </summary>
+        /// <typeparam name="T">Type of items.</typeparam>
+        /// <param name="sequence">Sequence of all items.</param>
+        /// <param name="sampleLength">Length of samples.</param>
+        /// <example>
+        /// For the sequence { 1, 2 } and length 2 result will be
+        /// {
+        ///    { 1, 1 },
+        ///    { 1, 2 },
+        ///    { 2, 1 },
+        ///    { 2, 2 }
+        /// }
+        /// </example>
+        public static IEnumerable<IEnumerable<T>> GetOrderedSamplesWithReplacement<T>(this IReadOnlyList<T> sequence,
+            uint sampleLength)
         {
             if((sequence?.Count ?? 0) == 0)
                 throw new ArgumentException("Sequence should not be null or empty.", nameof(sequence));
 
-            return GenerateAllSequencesOfLengthInternal(sequence, length);
+            return GetOrderedSamplesWithReplacementInternal(sequence, sampleLength);
         }
 
-        public static IEnumerable<IEnumerable<T>> GenerateAllSequencesOfLengthStackSafe<T>(this IReadOnlyList<T> sequence,
-            uint length)
+        /// <summary>
+        /// Returns all possible samples of length <paramref name="sampleLength"/> from <paramref name="sequence"/> with replacement.
+        /// Order of items is important. It means that result can contain samples with the same items but in different order.
+        /// This method does not throw StackOverflowException if <paramref name="sampleLength"/> is high but works slower.
+        /// </summary>
+        /// <typeparam name="T">Type of items.</typeparam>
+        /// <param name="sequence">Sequence of all items.</param>
+        /// <param name="sampleLength">Length of samples.</param>
+        /// <example>
+        /// For the sequence { 1, 2 } and length 2 result will be
+        /// {
+        ///    { 1, 1 },
+        ///    { 1, 2 },
+        ///    { 2, 1 },
+        ///    { 2, 2 }
+        /// }
+        /// </example>
+        public static IEnumerable<IEnumerable<T>> GetOrderedSamplesWithReplacementStackSafe<T>(this IReadOnlyList<T> sequence,
+            uint sampleLength)
         {
             if ((sequence?.Count ?? 0) == 0)
                 throw new ArgumentException("Sequence should not be null or empty.", nameof(sequence));
 
-            return GenerateAllSequencesOfLengthInternalStackSafe(sequence, length);
+            return GetOrderedSamplesWithReplacementInternalStackSafe(sequence, sampleLength);
         }
 
-        private static IEnumerable<IEnumerable<T>> GenerateAllSequencesOfLengthInternal<T>(
+        private static IEnumerable<IEnumerable<T>> GetOrderedSamplesWithReplacementInternal<T>(
             IReadOnlyList<T> sequence,
-            uint length)
+            uint sampleLength)
         {
-            if (length == 0)
+            if (sampleLength == 0)
             {
                 yield return new T[0];
                 yield break;
             }
 
-            foreach (var smallerSequence in GenerateAllSequencesOfLengthInternal(sequence, length - 1))
+            foreach (var smallerSequence in GetOrderedSamplesWithReplacementInternal(sequence, sampleLength - 1))
             {
                 var smallerArray = smallerSequence.ToArray();
 
@@ -45,42 +78,57 @@ namespace EdlinSoftware.Combinatorics
             }
         }
 
-        private static IEnumerable<IEnumerable<T>> GenerateAllSequencesOfLengthInternalStackSafe<T>(
+        private static IEnumerable<IEnumerable<T>> GetOrderedSamplesWithReplacementInternalStackSafe<T>(
             IReadOnlyList<T> sequence,
-            uint length)
+            uint sampleLength)
         {
-            if (length == 0)
+            if (sampleLength == 0)
             {
                 yield return new T[0];
                 yield break;
             }
 
-            foreach (var number in new NaryNumbersGenerator((uint)sequence.Count, length).GetAllNumbers())
+            foreach (var number in new NaryNumbersGenerator((uint)sequence.Count, sampleLength).GetAllNumbers())
             {
                 yield return number.Select(d => sequence[(int)d]).ToArray();
             }
         }
 
-        public static IEnumerable<IEnumerable<T>> GenerateOrderedDifferentSequencesOfLength<T>(this IReadOnlyList<T> sequence,
-            uint length)
+        /// <summary>
+        /// Returns all possible samples of length <paramref name="sampleLength"/> from <paramref name="sequence"/> with replacement.
+        /// Order of items is not important. It means that result does not contain samples with the same items but in different order.
+        /// </summary>
+        /// <typeparam name="T">Type of items.</typeparam>
+        /// <param name="sequence">Sequence of all items.</param>
+        /// <param name="sampleLength">Length of samples.</param>
+        /// <example>
+        /// For the sequence { 1, 2 } and length 2 result will be
+        /// {
+        ///    { 1, 1 },
+        ///    { 1, 2 },
+        ///    { 2, 2 }
+        /// }
+        /// </example>
+        public static IEnumerable<IEnumerable<T>> GetUnorderedSamplesWithReplacement<T>(this IReadOnlyList<T> sequence,
+            uint sampleLength)
         {
             if ((sequence?.Count ?? 0) == 0)
                 throw new ArgumentException("Sequence should not be null or empty.", nameof(sequence));
 
-            return GenerateOrderedDifferentSequencesOfLengthInternal(sequence, length);
+            return GetUnorderedSamplesWithReplacementInternal(sequence, sampleLength);
         }
 
-        private static IEnumerable<IEnumerable<T>> GenerateOrderedDifferentSequencesOfLengthInternal<T>(
+        private static IEnumerable<IEnumerable<T>> GetUnorderedSamplesWithReplacementInternal<T>(
             IReadOnlyList<T> sequence,
-            uint length)
+            uint sampleLength)
         {
-            if (length == 0)
+            if (sampleLength == 0)
             {
                 yield return new T[0];
                 yield break;
             }
 
-            foreach (var number in new NaryNumbersGenerator((uint)sequence.Count, length).GetAllNumbers().Where(IsSorted))
+            foreach (var number in new NaryNumbersGenerator((uint)sequence.Count, sampleLength).GetAllNumbers().Where(IsSorted))
             {
                 yield return number.Select(d => sequence[(int)d]).ToArray();
             }
@@ -97,26 +145,41 @@ namespace EdlinSoftware.Combinatorics
             return true;
         }
 
-        public static IEnumerable<IEnumerable<T>> GenerateAllPermutationsOfLength<T>(this IReadOnlyList<T> sequence,
-            uint length)
+        /// <summary>
+        /// Returns all possible samples of length <paramref name="sampleLength"/> from <paramref name="sequence"/> without replacement.
+        /// Order of items is important. It means that result can contain samples with the same items but in different order.
+        /// </summary>
+        /// <typeparam name="T">Type of items.</typeparam>
+        /// <param name="sequence">Sequence of all items.</param>
+        /// <param name="sampleLength">Length of samples.</param>
+        /// <example>
+        /// For the sequence { 1, 2 } and length 2 result will be
+        /// {
+        ///    { 1, 2 },
+        ///    { 2, 1 }
+        /// }
+        /// </example>
+        public static IEnumerable<IEnumerable<T>> GetOrderedSamplesWithoutReplacement<T>(this IReadOnlyList<T> sequence,
+            uint sampleLength)
         {
             if ((sequence?.Count ?? 0) == 0)
                 throw new ArgumentException("Sequence should not be null or empty.", nameof(sequence));
-            if(length > sequence?.Count)
-                throw new ArgumentOutOfRangeException(nameof(length), "Length of permutations can't be greater than length of sequence");
+            if(sampleLength > sequence?.Count)
+                throw new ArgumentOutOfRangeException(nameof(sampleLength), "Length of permutations can't be greater than length of sequence");
 
-            return GenerateAllPermutationsOfLengthInternal(sequence, length);
+            return GetOrderedSamplesWithoutReplacementInternal(sequence, sampleLength);
         }
 
-        private static IEnumerable<ISet<T>> GenerateAllPermutationsOfLengthInternal<T>(IReadOnlyList<T> sequence, uint length)
+        private static IEnumerable<ISet<T>> GetOrderedSamplesWithoutReplacementInternal<T>(IReadOnlyList<T> sequence, 
+            uint sampleLength)
         {
-            if (length == 0)
+            if (sampleLength == 0)
             {
                 yield return new HashSet<T>();
                 yield break;
             }
 
-            foreach (var smallerSequence in GenerateAllPermutationsOfLengthInternal(sequence, length - 1))
+            foreach (var smallerSequence in GetOrderedSamplesWithoutReplacementInternal(sequence, sampleLength - 1))
             {
                 foreach (var item in sequence.Where(i => !smallerSequence.Contains(i)))
                 {
@@ -125,26 +188,42 @@ namespace EdlinSoftware.Combinatorics
             }
         }
 
-        public static IEnumerable<IEnumerable<T>> GenerateAllPermutationsOfLengthStackSafe<T>(this IReadOnlyList<T> sequence,
-            uint length)
+        /// <summary>
+        /// Returns all possible samples of length <paramref name="sampleLength"/> from <paramref name="sequence"/> without replacement.
+        /// Order of items is important. It means that result can contain samples with the same items but in different order.
+        /// This method does not throw StackOverflowException if <paramref name="sampleLength"/> is high but works slower.
+        /// </summary>
+        /// <typeparam name="T">Type of items.</typeparam>
+        /// <param name="sequence">Sequence of all items.</param>
+        /// <param name="sampleLength">Length of samples.</param>
+        /// <example>
+        /// For the sequence { 1, 2 } and length 2 result will be
+        /// {
+        ///    { 1, 2 },
+        ///    { 2, 1 }
+        /// }
+        /// </example>
+        public static IEnumerable<IEnumerable<T>> GetOrderedSamplesWithoutReplacementStackSafe<T>(this IReadOnlyList<T> sequence,
+            uint sampleLength)
         {
             if ((sequence?.Count ?? 0) == 0)
                 throw new ArgumentException("Sequence should not be null or empty.", nameof(sequence));
-            if (length > sequence?.Count)
-                throw new ArgumentOutOfRangeException(nameof(length), "Length of permutations can't be greater than length of sequence");
+            if (sampleLength > sequence?.Count)
+                throw new ArgumentOutOfRangeException(nameof(sampleLength), "Length of permutations can't be greater than length of sequence");
 
-            return GenerateAllPermutationsOfLengthInternalStackSafe(sequence, length);
+            return GetOrderedSamplesWithoutReplacementInternalStackSafe(sequence, sampleLength);
         }
 
-        private static IEnumerable<IEnumerable<T>> GenerateAllPermutationsOfLengthInternalStackSafe<T>(IReadOnlyList<T> sequence, uint length)
+        private static IEnumerable<IEnumerable<T>> GetOrderedSamplesWithoutReplacementInternalStackSafe<T>(IReadOnlyList<T> sequence, 
+            uint sampleLength)
         {
-            if (length == 0)
+            if (sampleLength == 0)
             {
                 yield return new HashSet<T>();
                 yield break;
             }
 
-            foreach (var number in new NaryNumbersGenerator((uint)sequence.Count, length)
+            foreach (var number in new NaryNumbersGenerator((uint)sequence.Count, sampleLength)
                 .GetAllNumbers()
                 .Where(AllDigitsAreDistinct))
             {
@@ -157,18 +236,31 @@ namespace EdlinSoftware.Combinatorics
             return new HashSet<uint>(number).Count == number.Length;
         }
 
-        public static IEnumerable<IEnumerable<T>> GenerateOrderedDifferentPermutationsOfLength<T>(this IReadOnlyList<T> sequence,
-            uint length)
+        /// <summary>
+        /// Returns all possible samples of length <paramref name="sampleLength"/> from <paramref name="sequence"/> without replacement.
+        /// Order of items is not important. It means that result does not contain samples with the same items but in different order.
+        /// </summary>
+        /// <typeparam name="T">Type of items.</typeparam>
+        /// <param name="sequence">Sequence of all items.</param>
+        /// <param name="sampleLength">Length of samples.</param>
+        /// <example>
+        /// For the sequence { 1, 2 } and length 2 result will be
+        /// {
+        ///    { 1, 2 }
+        /// }
+        /// </example>
+        public static IEnumerable<IEnumerable<T>> GetUnorderedSamplesWithoutReplacement<T>(this IReadOnlyList<T> sequence,
+            uint sampleLength)
         {
             if ((sequence?.Count ?? 0) == 0)
                 throw new ArgumentException("Sequence should not be null or empty.", nameof(sequence));
-            if (length > sequence?.Count)
-                throw new ArgumentOutOfRangeException(nameof(length), "Length of permutations can't be greater than length of sequence");
+            if (sampleLength > sequence?.Count)
+                throw new ArgumentOutOfRangeException(nameof(sampleLength), "Length of permutations can't be greater than length of sequence");
 
-            return GenerateOrderedDifferentPermutationsOfLengthInternal(sequence, length);
+            return GetUnorderedSamplesWithoutReplacementInternal(sequence, sampleLength);
         }
 
-        private static IEnumerable<IEnumerable<T>> GenerateOrderedDifferentPermutationsOfLengthInternal<T>(IReadOnlyList<T> sequence, uint length)
+        private static IEnumerable<IEnumerable<T>> GetUnorderedSamplesWithoutReplacementInternal<T>(IReadOnlyList<T> sequence, uint length)
         {
             if (length == 0)
             {

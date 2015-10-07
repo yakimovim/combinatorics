@@ -5,11 +5,11 @@ using Xunit;
 
 namespace EdlinSoftware.Combinatorics.Tests
 {
-    public class Combinatorics_GenerateAllSequencesOfLength_Tests
+    public class Combinatorics_GetUnorderedSamplesWithReplacement_Tests
     {
         [Theory]
         [MemberData("NoSequences")]
-        public void GenerateAllSequencesOfLength_ShouldThrowException_IfSequenceIsNullOrEmpty(
+        public void GetUnorderedSamplesWithReplacement_ShouldThrowException_IfSequenceIsNullOrEmpty(
             IReadOnlyList<int> sequence,
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
@@ -18,15 +18,15 @@ namespace EdlinSoftware.Combinatorics.Tests
 
         [Theory]
         [MemberData("Generators")]
-        public void GenerateAllSequencesOfLength_ShouldReturnOneEmptyEnumeration_IfLengthIsZero(
+        public void GetUnorderedSamplesWithReplacement_ShouldReturnOneEmptyEnumeration_IfLengthIsZero(
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
-            Assert.Equal(new [] { new int[0] }, generator(new [] { 1 }, 0));
+            Assert.Equal(new[] { new int[0] }, generator(new[] { 1 }, 0));
         }
 
         [Theory]
         [MemberData("Generators")]
-        public void GenerateAllSequencesOfLength_ShouldReturnEnumerationOfSingleElements_IfLengthIsOne(
+        public void GetUnorderedSamplesWithReplacement_ShouldReturnEnumerationOfSingleElements_IfLengthIsOne(
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
             var sequences = generator(Enumerable.Range(1, 5).ToArray(), 1);
@@ -44,7 +44,7 @@ namespace EdlinSoftware.Combinatorics.Tests
 
         [Theory]
         [MemberData("Generators")]
-        public void GenerateAllSequencesOfLength_IfLengthIsTwo(
+        public void GetUnorderedSamplesWithReplacement_IfLengthIsTwo(
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
         {
             var sequences = generator(Enumerable.Range(1, 2).ToArray(), 2);
@@ -53,8 +53,24 @@ namespace EdlinSoftware.Combinatorics.Tests
             {
                 { 1, 1 },
                 { 1, 2 },
-                { 2, 1 },
                 { 2, 2 }
+            };
+            ver.Verify(sequences);
+        }
+
+        [Theory]
+        [MemberData("Generators")]
+        public void GetUnorderedSamplesWithReplacement_IfLengthIsThree(
+            Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator)
+        {
+            var sequences = generator(Enumerable.Range(1, 2).ToArray(), 3);
+
+            var ver = new SequencesVerifier<int>
+            {
+                { 1, 1, 1 },
+                { 1, 1, 2 },
+                { 1, 2, 2 },
+                { 2, 2, 2 }
             };
             ver.Verify(sequences);
         }
@@ -62,19 +78,16 @@ namespace EdlinSoftware.Combinatorics.Tests
         private static IEnumerable<Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>>> GetGenerators()
         {
             Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> generator =
-                (sequence, length) => sequence.GenerateAllSequencesOfLength(length);
-            Func<IReadOnlyList<int>, uint, IEnumerable<IEnumerable<int>>> safeGenerator =
-                (sequence, length) => sequence.GenerateAllSequencesOfLengthStackSafe(length);
+                (sequence, length) => sequence.GetUnorderedSamplesWithReplacement(length);
 
             yield return generator;
-            yield return safeGenerator;
         }
 
         public static IEnumerable<object[]> NoSequences
         {
             get
             {
-                foreach(var generator in GetGenerators())
+                foreach (var generator in GetGenerators())
                 {
                     yield return new object[] { null, generator };
                     yield return new object[] { new int[0], generator };
